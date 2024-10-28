@@ -1,0 +1,12 @@
+{
+    "name": "task1",
+    "project": "project1",
+    "dateCreated": "date1",
+    "deadline": "date2",
+    "description": "user-created description of task",
+    "tags": [
+        "wedding",
+        "funny"
+    ],
+    "priority": 1
+}
