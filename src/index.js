@@ -1,4 +1,5 @@
 import "./style.css";
+import {allTasksPage} from "./js-modules/all-tasks-page.js";
 
 const log = console.log;
 
@@ -11,10 +12,39 @@ const GLOBAL = (function() {
 
     const utilities = function() {
         function readData(path) {
-            return require(`${path}`);
+            return [
+                {
+                    name: "task1",
+                    project: "project1",
+                    dateCreated: "date1",
+                    deadline: "date2",
+                    description: "user-created description of task1",
+                    tags: [
+                        "wedding",
+                        "funny"
+                    ],
+                    priority: 1,
+                    completed: false
+                },
+        
+                {
+                    name: "task2",
+                    project: "project1",
+                    dateCreated: "date3",
+                    deadline: "date4",
+                    description: "user-created description of task2",
+                    tags: [
+                        "dog",
+                        "american"
+                    ],
+                    priority: 5,
+                    completed: true
+                }
+            ];
         }
 
         function writeNewTask(name, project, dateCreated, deadline, description, tags, priority) {
+
             const newTask = {
                 name,
                 project,
@@ -31,46 +61,20 @@ const GLOBAL = (function() {
         function addTaskToData(task, data) {
             data.push(task);
         }
+        function toggleCompleted(task) {
+            task.completed = (task.completed ? false : true);
+        }
 
         return {
             readData,
             writeNewTask,
-            addTaskToData
+            addTaskToData,
+            toggleCompleted,
         }
     }();
 
-    const data = [
-        {
-            name: "task1",
-            project: "project1",
-            dateCreated: "date1",
-            deadline: "date2",
-            description: "user-created description of task1",
-            tags: [
-                "wedding",
-                "funny"
-            ],
-            priority: 1
-        },
+    const data = utilities.readData(dataPath);
 
-        {
-            name: "task2",
-            project: "project1",
-            dateCreated: "date3",
-            deadline: "date4",
-            description: "user-created description of task2",
-            tags: [
-                "dog",
-                "american"
-            ],
-            priority: 5
-        }
-    ];
-
-
-
-    utilities.writeNewTask("task3", "project2", "date5", "date6", "description of task3", ["tag1", "tag2"], 3);
-
-    log(data);
+    allTasksPage(contentPanel);
 
 })();
