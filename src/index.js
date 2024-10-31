@@ -10,68 +10,60 @@ const GLOBAL = (function() {
     const navigationBar = document.querySelector(".navigation");
     const contentPanel = document.querySelector(".content");
 
-    const utilities = function() {
-        function readData(path) {
-            return [
-                {
-                    name: "task1",
-                    project: projectsList.project1,
-                    dateCreated: "date1",
-                    deadline: "date2",
-                    description: "user-created description of task1",
-                    tags: [
-                        "wedding",
-                        "funny"
-                    ],
-                    priority: 1,
-                    completed: false
-                },
-        
-                {
-                    name: "task2",
-                    project: projectsList.project2,
-                    dateCreated: "date3",
-                    deadline: "date4",
-                    description: "user-created description of task2",
-                    tags: [
-                        "dog",
-                        "american"
-                    ],
-                    priority: 5,
-                    completed: true
-                }
-            ];
-        }
-
-        function writeNewTask(name, project, dateCreated, deadline, description, tags, priority) {
-
-            const newTask = {
-                name,
-                project,
-                dateCreated,
-                deadline,
-                description,
-                tags,
-                priority
+    function readData(path) {
+        return [
+            {
+                name: "task1",
+                project: projectsList.project1,
+                dateCreated: "date1",
+                deadline: "date2",
+                description: "user-created description of task1",
+                tags: [
+                    "wedding",
+                    "funny"
+                ],
+                priority: 1,
+                completed: false
+            },
+    
+            {
+                name: "task2",
+                project: projectsList.project2,
+                dateCreated: "date3",
+                deadline: "date4",
+                description: "user-created description of task2",
+                tags: [
+                    "dog",
+                    "american"
+                ],
+                priority: 5,
+                completed: true
             }
-    
-            addTaskToData(newTask, data);
-        }
-    
-        function addTaskToData(task, data) {
-            data.push(task);
-        }
-        function toggleCompleted(task) {
-            task.completed = (task.completed ? false : true);
+        ];
+    }
+    function writeNewTask(name, project, dateCreated, deadline, description, tags, priority) {
+
+        const newTask = {
+            name,
+            project,
+            dateCreated,
+            deadline,
+            description,
+            tags,
+            priority
         }
 
-        return {
-            readData,
-            writeNewTask,
-            addTaskToData,
-            toggleCompleted,
-        }
-    }();
+        addTaskToData(newTask, data);
+    }
+    function addTaskToData(task, data) {
+        data.push(task);
+    }
+    function toggleCompleted(task) {
+        task.completed = (task.completed ? false : true);
+    }
+    function clearContent() {
+        contentPanel.innerHTML = "";
+    }
 
     const projectsList = {
         project1:   {
@@ -93,8 +85,7 @@ const GLOBAL = (function() {
                     },
     };
 
-    const data = utilities.readData(dataPath);
+    const data = readData(dataPath);
 
     allTasksPage(contentPanel, data);
-
 })();
