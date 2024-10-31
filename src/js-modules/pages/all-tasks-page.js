@@ -6,11 +6,11 @@ export const allTasksPage = function(container, data, projectsList) {
     container.appendChild(header);
 
     const allTasksList = document.createElement("ul");
-    for (const task of data) {
+    data.forEach((task) => {
         const taskListElement = document.createElement("li");
         taskListElement.textContent = task.name;
         allTasksList.appendChild(taskListElement);
-    }
+    })
     container.appendChild(allTasksList);
 
     const projectsHeader = document.createElement("h2");
