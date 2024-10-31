@@ -1,9 +1,10 @@
+import {utilsInit} from "../utils.js";
+
 export const allTasksPage = function(container, data, projectsList) {
     const log = console.log;
+    const utils = utilsInit();
     
-    const header = document.createElement("h1");
-    header.textContent = "All Tasks";
-    container.appendChild(header);
+    utils.addNewBasicDomElement("h1", "All Tasks", container);
 
     const allTasksList = document.createElement("ul");
     data.forEach((task) => {
@@ -13,9 +14,7 @@ export const allTasksPage = function(container, data, projectsList) {
     })
     container.appendChild(allTasksList);
 
-    const projectsHeader = document.createElement("h2");
-    projectsHeader.textContent = "Projects";
-    container.appendChild(projectsHeader);
+    utils.addNewBasicDomElement("h2", "Projects", container);
 
     const projectTasksList = document.createElement("ul");
     data.filter((task) => task.project.type === "single").forEach((task) => {
@@ -25,9 +24,7 @@ export const allTasksPage = function(container, data, projectsList) {
     })
     container.appendChild(projectTasksList);
 
-    const groupProjectsHeader = document.createElement("h2");
-    groupProjectsHeader.textContent = "Group Projects";
-    container.appendChild(groupProjectsHeader);
+    utils.addNewBasicDomElement("h2", "Group Projects", container);
 
     const groupProjectTasksList = document.createElement("ul");
     data.filter((task) => task.project.type === "group").forEach ((task) => {
