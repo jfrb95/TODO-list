@@ -15,7 +15,7 @@ const GLOBAL = (function() {
             return [
                 {
                     name: "task1",
-                    project: "project1",
+                    project: projectsList.project1,
                     dateCreated: "date1",
                     deadline: "date2",
                     description: "user-created description of task1",
@@ -29,7 +29,7 @@ const GLOBAL = (function() {
         
                 {
                     name: "task2",
-                    project: "project1",
+                    project: projectsList.project2,
                     dateCreated: "date3",
                     deadline: "date4",
                     description: "user-created description of task2",
@@ -73,23 +73,26 @@ const GLOBAL = (function() {
         }
     }();
 
-    const projectsList = [
-        {
-            name: "project1",
-            type: "single",
-            completed: false,
-        },
-        {
-            name: "project2",
-            type: "group"
-        },
-        {
-            name: "project3",
-            type: "single",
-            completed: true,
-        }
-    ];
-    
+    const projectsList = {
+        project1:   {
+                        name: "project1",
+                        type: "single",
+                        completed: false,
+                    },
+
+        project2:   {
+                        name: "project2",
+                        type: "group",
+                        completed: false,
+                    },
+
+        project3:   {
+                        name: "project3",
+                        type: "single",
+                        completed: true,
+                    },
+    };
+
     const data = utilities.readData(dataPath);
 
     allTasksPage(contentPanel, data);
