@@ -1,5 +1,5 @@
 import "./style.css";
-import {allTasksPage} from "./js-modules/all-tasks-page.js";
+import {allTasksPage} from "./js-modules/pages/all-tasks-page.js";
 
 const log = console.log;
 
@@ -73,8 +73,25 @@ const GLOBAL = (function() {
         }
     }();
 
+    const projectsList = [
+        {
+            name: "project1",
+            type: "single",
+            completed: false,
+        },
+        {
+            name: "project2",
+            type: "group"
+        },
+        {
+            name: "project3",
+            type: "single",
+            completed: true,
+        }
+    ];
+    
     const data = utilities.readData(dataPath);
 
-    allTasksPage(contentPanel);
+    allTasksPage(contentPanel, data);
 
 })();
