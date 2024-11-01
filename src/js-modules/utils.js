@@ -7,6 +7,7 @@
 
 import { isToday } from "date-fns";
 import { isThisWeek } from "date-fns";
+import { isThisMonth } from "date-fns";
 const log = console.log;
 
 export const utilsInit = function() {
@@ -54,6 +55,10 @@ export const utilsInit = function() {
         return isThisWeek(task.deadline);
     }
 
+    function taskDueThisMonth(task) {
+        return isThisMonth(task.deadline);
+    }
+
     return {
         addElementWithTextToContainer,
         addTaskToDomList,
@@ -64,6 +69,7 @@ export const utilsInit = function() {
             groupProjectFilter,
             taskDueToday,
             taskDueThisWeek,
+            taskDueThisMonth,
         }
 
     }

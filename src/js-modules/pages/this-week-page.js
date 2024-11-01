@@ -8,4 +8,8 @@ export const thisWeekPage = function(container, data) {
     utils.addElementWithTextToContainer("h2", "Projects", container);
 
     utils.addNewTaskListToDom(data, container, utils.callback.singleProjectFilter, utils.callback.taskDueThisWeek);
+
+    utils.addElementWithTextToContainer("h2", "Group Projects", container);
+
+    utils.addNewTaskListToDom(data, container, utils.callback.groupProjectFilter, utils.callback.taskDueThisWeek);
 }

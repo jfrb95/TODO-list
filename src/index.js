@@ -2,6 +2,7 @@ import "./style.css";
 import { allTasksPage } from "./js-modules/pages/all-tasks-page.js";
 import { todayTasksPage } from "./js-modules/pages/today-tasks-page.js";
 import { thisWeekPage } from "./js-modules/pages/this-week-page.js";
+import { thisMonthPage } from "./js-modules/pages/this-month-page.js";
 
 const log = console.log;
 
@@ -11,6 +12,10 @@ const GLOBAL = (function() {
     const container = document.querySelector(".container");
     const navigationBar = document.querySelector(".navigation");
     const contentPanel = document.querySelector(".content");
+
+    function Task() {
+        
+    }
 
     function readData(path) {
         return [
@@ -93,5 +98,6 @@ const GLOBAL = (function() {
 
     //allTasksPage(contentPanel, data);
     //todayTasksPage(contentPanel, data);
-    thisWeekPage(contentPanel, data);
+    //thisWeekPage(contentPanel, data);
+    thisMonthPage(contentPanel, data);
 })();
