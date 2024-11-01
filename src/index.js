@@ -1,5 +1,6 @@
 import "./style.css";
-import {allTasksPage} from "./js-modules/pages/all-tasks-page.js";
+import { allTasksPage } from "./js-modules/pages/all-tasks-page.js";
+import { todayTasksPage } from "./js-modules/pages/today-tasks-page.js";
 
 const log = console.log;
 
@@ -16,7 +17,7 @@ const GLOBAL = (function() {
                 name: "task1",
                 project: projectsList.project1,
                 dateCreated: "date1",
-                deadline: "date2",
+                deadline: new Date(2025, 1, 1),
                 description: "user-created description of task1",
                 tags: [
                     "wedding",
@@ -30,7 +31,7 @@ const GLOBAL = (function() {
                 name: "task2",
                 project: projectsList.project2,
                 dateCreated: "date3",
-                deadline: "date4",
+                deadline: new Date(),
                 description: "user-created description of task2",
                 tags: [
                     "dog",
@@ -87,5 +88,7 @@ const GLOBAL = (function() {
 
     const data = readData(dataPath);
 
-    allTasksPage(contentPanel, data);
+    writeNewTask("task3", projectsList.project1, "date5", new Date(), "description for task3", ["tag6", "tag1"], 3)
+
+    todayTasksPage(contentPanel, data);
 })();
