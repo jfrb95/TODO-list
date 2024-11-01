@@ -1,10 +1,12 @@
 //This is a module for utility functions to be used 
 //  in many other modules
-// NOTE: WE DO NOT WANT utils.js AND utilities from index.js
-//  TO BOTH EXIST - FIND A SOLUTION
 
+//need a function that checks the project.type AND checks if the 
+// project.date is today. Is there a way of generalizing the 
+// filter callback functions?
 
-//make function to create ,populate, and add to the dom a list of tasks
+import { isToday } from "date-fns";
+const log = console.log;
 
 export const utilsInit = function() {
     function addElementWithTextToContainer(element, text, container) {
@@ -19,20 +21,28 @@ export const utilsInit = function() {
         taskList.appendChild(taskElement);
     }
 
-    function addNewTaskListToDom(data, filterFunction=(task)=>{}, container) {
+    function addNewTaskListToDom(data, container, ...filterFunctions) {
         const taskList = document.createElement("li");
-        data.filter(filterFunction)
-            .forEach((task) => {
+        let filteredData = data.slice();
+        
+        for (const func of filterFunctions) {
+            filteredData = filteredData.filter(func);
+        }
+        filteredData.forEach((task) => {
                 addTaskToDomList(task, taskList);
-            })
+            });
         container.appendChild(taskList);
     }
 
-    function singleProjectFilterCallback(task) {
+    function singleProjectFilter(task) {
         return task.project.type === "single";
     }
 
-    function groupProjectFilterCallback(task) {
+    function taskDueToday(task) {
+        return isToday(task.deadline);
+    }
+
+    function groupProjectFilter(task) {
         return task.project.type === "group";
     }
 
@@ -40,8 +50,13 @@ export const utilsInit = function() {
         addElementWithTextToContainer,
         addTaskToDomList,
         addNewTaskListToDom,
-        singleProjectFilterCallback,
-        groupProjectFilterCallback,
         
+
+        callback: {
+            singleProjectFilter,
+            groupProjectFilter,
+            taskDueToday,
+        }
+
     }
 }

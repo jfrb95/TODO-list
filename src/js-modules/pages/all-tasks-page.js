@@ -8,9 +8,9 @@ export const allTasksPage = function(container, data, projectsList) {
 
     utils.addElementWithTextToContainer("h2", "Projects", container);
 
-    utils.addNewTaskListToDom(data, utils.singleProjectFilterCallback, container);
+    utils.addNewTaskListToDom(data, container, utils.singleProjectFilterCallback);
 
     utils.addElementWithTextToContainer("h2", "Group Projects", container);
 
-    utils.addNewTaskListToDom(data, utils.groupProjectFilterCallback, container);
+    utils.addNewTaskListToDom(data, container, utils.groupProjectFilterCallback);
 }

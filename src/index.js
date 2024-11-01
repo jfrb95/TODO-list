@@ -90,6 +90,6 @@ const GLOBAL = (function() {
 
     writeNewTask("task3", projectsList.project1, "date5", new Date(), "description for task3", ["tag6", "tag1"], 3)
 
-    allTasksPage(contentPanel, data);
-    //todayTasksPage(contentPanel, data);
+    //allTasksPage(contentPanel, data);
+    todayTasksPage(contentPanel, data);
 })();
