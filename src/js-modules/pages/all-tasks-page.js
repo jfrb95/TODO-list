@@ -8,17 +8,9 @@ export const allTasksPage = function(container, data, projectsList) {
 
     utils.addElementWithTextToContainer("h2", "Projects", container);
 
-    const projectTasksList = document.createElement("ul");
-    data.filter((task) => task.project.type === "single").forEach((task) => {
-        utils.addTaskToDomList(task, projectTasksList);
-    })
-    container.appendChild(projectTasksList);
+    utils.addNewTaskListToDom(data, utils.singleProjectFilterCallback, container);
 
     utils.addElementWithTextToContainer("h2", "Group Projects", container);
 
-    const groupProjectTasksList = document.createElement("ul");
-    data.filter((task) => task.project.type === "group").forEach ((task) => {
-        utils.addTaskToDomList(task, groupProjectTasksList);
-    })
-    container.appendChild(groupProjectTasksList);
+    utils.addNewTaskListToDom(data, utils.groupProjectFilterCallback, container);
 }
