@@ -6,6 +6,7 @@
 // filter callback functions?
 
 import { isToday } from "date-fns";
+import { isThisWeek } from "date-fns";
 const log = console.log;
 
 export const utilsInit = function() {
@@ -34,6 +35,9 @@ export const utilsInit = function() {
         container.appendChild(taskList);
     }
 
+
+    //CALLBACKS
+
     function singleProjectFilter(task) {
         return task.project.type === "single";
     }
@@ -46,16 +50,20 @@ export const utilsInit = function() {
         return task.project.type === "group";
     }
 
+    function taskDueThisWeek(task) {
+        return isThisWeek(task.deadline);
+    }
+
     return {
         addElementWithTextToContainer,
         addTaskToDomList,
         addNewTaskListToDom,
         
-
         callback: {
             singleProjectFilter,
             groupProjectFilter,
             taskDueToday,
+            taskDueThisWeek,
         }
 
     }

@@ -1,6 +1,7 @@
 import "./style.css";
 import { allTasksPage } from "./js-modules/pages/all-tasks-page.js";
 import { todayTasksPage } from "./js-modules/pages/today-tasks-page.js";
+import { thisWeekPage } from "./js-modules/pages/this-week-page.js";
 
 const log = console.log;
 
@@ -91,5 +92,6 @@ const GLOBAL = (function() {
     writeNewTask("task3", projectsList.project1, "date5", new Date(), "description for task3", ["tag6", "tag1"], 3)
 
     //allTasksPage(contentPanel, data);
-    todayTasksPage(contentPanel, data);
+    //todayTasksPage(contentPanel, data);
+    thisWeekPage(contentPanel, data);
 })();
