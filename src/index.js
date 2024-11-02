@@ -13,8 +13,12 @@ const GLOBAL = (function() {
     const navigationBar = document.querySelector(".navigation");
     const contentPanel = document.querySelector(".content");
 
+    const navButtons = document.querySelector(".nav-buttons");
+    navButtons.addEventListener("click", (event) => {
+        log(event.target.classList.contains("nav-button"));
+    });
     function Task() {
-        
+
     }
 
     function readData(path) {
