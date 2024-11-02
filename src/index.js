@@ -15,7 +15,11 @@ const GLOBAL = (function() {
 
     const navButtons = document.querySelector(".nav-buttons");
     navButtons.addEventListener("click", (event) => {
-        log(event.target.classList.contains("nav-button"));
+        const classes = event.target.classList;
+        if (!classes.contains("nav-button")) {
+            return;
+        }
+        loadNewPage(classes[0]);
     });
     function Task() {
 
@@ -75,6 +79,26 @@ const GLOBAL = (function() {
     function clearContent() {
         contentPanel.innerHTML = "";
     }
+    function loadNewPage(str) {
+        switch (str) {
+            case "all":
+                clearContent();
+                allTasksPage(contentPanel, data);
+                break;
+            case "today": 
+                clearContent();
+                todayTasksPage(contentPanel, data);
+                break;
+            case "week":
+                clearContent();
+                thisWeekPage(contentPanel, data);
+                break;
+            case "month":
+                clearContent();
+                thisMonthPage(contentPanel, data);
+                break;
+        }
+    }
 
     const projectsList = {
         project1:   {
@@ -99,9 +123,5 @@ const GLOBAL = (function() {
     const data = readData(dataPath);
 
     writeNewTask("task3", projectsList.project1, "date5", new Date(), "description for task3", ["tag6", "tag1"], 3)
-
-    //allTasksPage(contentPanel, data);
-    //todayTasksPage(contentPanel, data);
-    //thisWeekPage(contentPanel, data);
-    thisMonthPage(contentPanel, data);
+    allTasksPage(contentPanel, data);
 })();
