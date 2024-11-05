@@ -1,6 +1,6 @@
 import {utilsInit} from "../utils.js";
 
-export const allTasksPage = function(container, data, projectsList) {
+export const allTasksPage = function(container, data) {
     const log = console.log;
     const utils = utilsInit();
     
