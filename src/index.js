@@ -1,16 +1,14 @@
 import "./style.css";
-import { allTasksPage } from "./js-modules/pages/all-tasks-page.js";
-import { todayTasksPage } from "./js-modules/pages/today-tasks-page.js";
-import { thisWeekPage } from "./js-modules/pages/this-week-page.js";
-import { thisMonthPage } from "./js-modules/pages/this-month-page.js";
+import { displayContentPage } from "./js-modules/displayContentPage.js";
 
 import { startOfTomorrow } from "date-fns";
-import { endOfTomorrow } from "date-fns";
-import { endOfDay } from "date-fns";
+
+import { utilsInit } from "./js-modules/utils.js";
 
 const log = console.log;
 
 const GLOBAL = (function() {
+    const utils = utilsInit();
     const dataPath = "./data.json";
 
     const container = document.querySelector(".container");
@@ -27,8 +25,25 @@ const GLOBAL = (function() {
         }
         loadNewPage(classes[0]);
     });
-    function Task() {
-        //TO FINISH IN THE FUTURE
+
+    function Task(name, project, dateCreated, deadline, description, tags, priority) {
+
+        return {
+            name,
+            project,
+            dateCreated,
+            deadline,
+            description,
+            tags,
+            priority
+        }
+    }
+    function Project(name, type) {
+        return {
+            name,
+            type,
+            completed: false,
+        }
     }
 
     function readData(path) {
@@ -62,20 +77,6 @@ const GLOBAL = (function() {
             }
         ];
     }
-    function writeNewTask(name, project, dateCreated, deadline, description, tags, priority) {
-
-        const newTask = {
-            name,
-            project,
-            dateCreated,
-            deadline,
-            description,
-            tags,
-            priority
-        }
-
-        addTaskToData(newTask, data);
-    }
     function addTaskToData(task, data) {
         data.push(task);
     }
@@ -89,19 +90,19 @@ const GLOBAL = (function() {
         switch (str) {
             case "all":
                 clearContent();
-                allTasksPage(contentPanel, data);
+                displayContentPage(contentPanel, data, "All Tasks");
                 break;
             case "today": 
                 clearContent();
-                todayTasksPage(contentPanel, data);
+                displayContentPage(contentPanel, data, "Today's Tasks", utils.callback.taskDueToday);
                 break;
             case "week":
                 clearContent();
-                thisWeekPage(contentPanel, data);
+                displayContentPage(contentPanel, data, "This Week", utils.callback.taskDueThisWeek);
                 break;
             case "month":
                 clearContent();
-                thisMonthPage(contentPanel, data);
+                displayContentPage(contentPanel, data, "This Month", utils.callback.taskDueThisMonth);
                 break;
         }
     }
@@ -128,8 +129,14 @@ const GLOBAL = (function() {
         addListOfProjectsToTarget(projectsOfTypeFromList("single", getProjectList("path goes here")), domProjectsList);
         addListOfProjectsToTarget(projectsOfTypeFromList("group", getProjectList("path goes here")), domGroupProjectsList);
     }
+    function addProjectToList(project) {
+        projectList = {
+            ...projectList,
+            project
+        }
+    }
 
-    const projectList = {
+    let projectList = {
         project1:   {
                         name: "project1",
                         type: "single",
@@ -152,8 +159,10 @@ const GLOBAL = (function() {
     const data = readData(dataPath);
     updateNavProjectLists();
 
-    writeNewTask("task3", projectList.project1, "date5", startOfTomorrow(), "description for task3", ["tag6", "tag1"], 3);
-    writeNewTask("task4", projectList.project1, "date6", new Date(), "description for task 4", ["tag1"], 2);
-    
-    allTasksPage(contentPanel, data);
+    addTaskToData(Task("task3", projectList.project1, "date5", startOfTomorrow(), "description for task3", ["tag6", "tag1"], 3), data);
+    addTaskToData(Task("task4", projectList.project1, "date6", new Date(), "description for task 4", ["tag1"], 2), data);
+
+    displayContentPage(contentPanel, data, "All Tasks");
+
+    //LAST TIME: Generalised the content page creation functions
 })();
