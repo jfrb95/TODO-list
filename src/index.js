@@ -16,6 +16,9 @@ const GLOBAL = (function() {
     const contentPanel = document.querySelector(".content");
     const domProjectsList = document.querySelector(".projects-list");
     const domGroupProjectsList = document.querySelector(".group-projects-list");
+    const newTaskDialog = document.querySelector("dialog.new-task");
+    
+    
 
     const navButtons = document.querySelector(".nav-buttons");
     navButtons.addEventListener("click", (event) => {
@@ -25,6 +28,32 @@ const GLOBAL = (function() {
         }
         loadNewPage(classes[0]);
     });
+
+    /*NEW PROJECT DIALOG*/
+    const newProjectDialog = document.querySelector("dialog.new-project");
+    const newProjectButton = document.querySelector(".new-project-button");
+    const dialogCancelNewProjectButton = document.querySelector(".new-project .dialog-cancel");
+    newProjectButton.addEventListener("click", (event) => {
+        newProjectDialog.showModal();
+    })
+
+    dialogCancelNewProjectButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        newProjectDialog.close();
+    })
+
+    /*New Group Project Dialog*/
+    const newGroupProjectDialog = document.querySelector("dialog.new-group-project");
+    const newGroupProjectButton = document.querySelector(".new-group-project-button");
+    const dialogCancelNewGroupProjectButton = document.querySelector(".new-group-project .dialog-cancel");
+    newGroupProjectButton.addEventListener("click", (event) => {
+        newGroupProjectDialog.showModal();
+    })
+
+    dialogCancelNewGroupProjectButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        newGroupProjectDialog.close();
+    })
 
     function Task(name, project, dateCreated, deadline, description, tags, priority) {
 
@@ -38,11 +67,12 @@ const GLOBAL = (function() {
             priority
         }
     }
-    function Project(name, type) {
+    function Project(name, type, description, completed=false) {
         return {
             name,
             type,
-            completed: false,
+            description,
+            completed,
         }
     }
 
@@ -164,5 +194,7 @@ const GLOBAL = (function() {
 
     displayContentPage(contentPanel, data, "All Tasks");
 
-    //LAST TIME: Generalised the content page creation functions
+    //TO DO: Get project and task displays to have more functionality
+    //  not just the name.
+    //Get user input to create new tasks/projects
 })();
