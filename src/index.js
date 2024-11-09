@@ -16,10 +16,6 @@ const GLOBAL = (function() {
     const contentPanel = document.querySelector(".content");
     const domProjectsList = document.querySelector(".projects-list");
     const domGroupProjectsList = document.querySelector(".group-projects-list");
-    
-    
-    
-
     const navButtons = document.querySelector(".nav-buttons");
     navButtons.addEventListener("click", (event) => {
         const classes = event.target.classList;
@@ -38,22 +34,26 @@ const GLOBAL = (function() {
     newProjectButton.addEventListener("click", (event) => {
         newProjectDialog.showModal();
     });
-
     dialogCreateProjectButton.addEventListener("click", (event) => {
         event.preventDefault();
         const fd = new FormData(newProjectForm);
-        addProjectToList(
-            Project(
-                fd.get("project-name"),
-                fd.get("type"),
-                fd.get("description"),
-                false
-            )
-        );
-        updateNavProjectLists();
-        newProjectDialog.close();
+        if (Object.keys(projectList).includes(fd.get("project-name"))) {
+            alert("That name is already in use");
+        } else {
+            addProjectToList(
+                Project(
+                    fd.get("project-name"),
+                    fd.get("type"),
+                    fd.get("description"),
+                    false
+                )
+            );
+            updateNavProjectLists();
+            newProjectDialog.close();
+        }
+        
+        
     });
-
     dialogCancelNewProjectButton.addEventListener("click", (event) => {
         event.preventDefault();
         newProjectDialog.close();
@@ -78,26 +78,35 @@ const GLOBAL = (function() {
     });
     dialogCreateTaskButton.addEventListener("click", (event) => {
         event.preventDefault();
+        let uniqueName = true;
         const fd = new FormData(newTaskForm);
-        addTaskToData(
-            Task(
-                fd.get("task-name"),
-                projectList[fd.get("project")],
-                new Date(),
-                new Date(fd.get("deadline")),
-                fd.get("description"),
-                [],
-                fd.get("priority")
-            ), 
-            data
-        );
-        log(fd.get("project"));
-        log(projectList[fd.get("project")]);
-        loadNewPage(contentPanel.dataset.currentPage);
-        newTaskDialog.close();
+        for (const task of data) {
+            if (task.name === fd.get("task-name")) {
+                uniqueName = false;
+            }
+        }
+        if (uniqueName) {
+            addTaskToData(
+                Task(
+                    fd.get("task-name"),
+                    projectList[fd.get("project")],
+                    new Date(),
+                    new Date(fd.get("deadline")),
+                    fd.get("description"),
+                    [],
+                    fd.get("priority")
+                ), 
+                data
+            );
+            loadNewPage(contentPanel.dataset.currentPage);
+            newTaskDialog.close();
+        } else {
+            alert("That name is already in use");
+        };
     });
     dialogCancelNewTaskButton.addEventListener("click", (event) => {
-
+        event.preventDefault();
+        newTaskDialog.close();
     });
 
     function Task(name, project, dateCreated, deadline, description, tags, priority) {
