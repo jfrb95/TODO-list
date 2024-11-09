@@ -35,8 +35,18 @@
 
             <button class="new-project-button">+ add project</button>
         </nav>
-        <div class="content" data-current-page="all">
-
+        <div class="temp-wrapper">
+            <div class="delete-this">
+                <div class="task">
+                    <p>Task Name</p>
+                    <ul class="task-controls">
+                        <li><button class="delete-task">Delete</button></li>
+                        <li><button class="change-task-details">Edit</button></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="content" data-current-page="all">
+            </div>
         </div>
         <dialog class="new-task">
             <form method="dialog">
@@ -52,7 +62,7 @@
 
                 <label for="project">Project</label>
                 <select id="project" name="project">
-                    <option value="">-</option>
+                
                 </select>
 
                 <label for="priority">Priority - change how this works</label>

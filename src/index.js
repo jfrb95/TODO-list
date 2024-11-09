@@ -250,7 +250,4 @@ const GLOBAL = (function() {
 
     //TO DO: Get project and task displays to have more functionality
     //  not just the name.
-
-    //Prevent user from creating a new project or task with the same
-    //  name as an existing one
 })();
