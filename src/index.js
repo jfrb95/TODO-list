@@ -16,7 +16,7 @@ const GLOBAL = (function() {
     const contentPanel = document.querySelector(".content");
     const domProjectsList = document.querySelector(".projects-list");
     const domGroupProjectsList = document.querySelector(".group-projects-list");
-    const newTaskDialog = document.querySelector("dialog.new-task");
+    
     
     
 
@@ -33,27 +33,72 @@ const GLOBAL = (function() {
     const newProjectDialog = document.querySelector("dialog.new-project");
     const newProjectButton = document.querySelector(".new-project-button");
     const dialogCancelNewProjectButton = document.querySelector(".new-project .dialog-cancel");
+    const newProjectForm = document.querySelector(".new-project form");
+    const dialogCreateProjectButton = document.querySelector(".dialog-create-project");
     newProjectButton.addEventListener("click", (event) => {
         newProjectDialog.showModal();
-    })
+    });
+
+    dialogCreateProjectButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        const fd = new FormData(newProjectForm);
+        addProjectToList(
+            Project(
+                fd.get("project-name"),
+                fd.get("type"),
+                fd.get("description"),
+                false
+            )
+        );
+        updateNavProjectLists();
+        newProjectDialog.close();
+    });
 
     dialogCancelNewProjectButton.addEventListener("click", (event) => {
         event.preventDefault();
         newProjectDialog.close();
-    })
+    });
 
-    /*New Group Project Dialog*/
-    const newGroupProjectDialog = document.querySelector("dialog.new-group-project");
-    const newGroupProjectButton = document.querySelector(".new-group-project-button");
-    const dialogCancelNewGroupProjectButton = document.querySelector(".new-group-project .dialog-cancel");
-    newGroupProjectButton.addEventListener("click", (event) => {
-        newGroupProjectDialog.showModal();
-    })
-
-    dialogCancelNewGroupProjectButton.addEventListener("click", (event) => {
+    /*NEW TASK DIALOG*/
+    const newTaskDialog = document.querySelector("dialog.new-task");
+    const newTaskButton = document.querySelector(".new-task-button");
+    const dialogCancelNewTaskButton = document.querySelector(".new-task .dialog-cancel")
+    const newTaskForm = document.querySelector(".new-task form");
+    const dialogCreateTaskButton = document.querySelector(".dialog-create-task");
+    const newTaskProjectDropdown = document.querySelector("select#project");
+    newTaskButton.addEventListener("click", (event) => {
+        clearElement(newTaskProjectDropdown);
+        for (const project of Object.keys(projectList)) {
+            const option = document.createElement("option");
+            option.textContent = project;
+            option.value = project;
+            newTaskProjectDropdown.appendChild(option);
+        }
+        newTaskDialog.showModal();
+    });
+    dialogCreateTaskButton.addEventListener("click", (event) => {
         event.preventDefault();
-        newGroupProjectDialog.close();
-    })
+        const fd = new FormData(newTaskForm);
+        addTaskToData(
+            Task(
+                fd.get("task-name"),
+                projectList[fd.get("project")],
+                new Date(),
+                new Date(fd.get("deadline")),
+                fd.get("description"),
+                [],
+                fd.get("priority")
+            ), 
+            data
+        );
+        log(fd.get("project"));
+        log(projectList[fd.get("project")]);
+        loadNewPage(contentPanel.dataset.currentPage);
+        newTaskDialog.close();
+    });
+    dialogCancelNewTaskButton.addEventListener("click", (event) => {
+
+    });
 
     function Task(name, project, dateCreated, deadline, description, tags, priority) {
 
@@ -113,28 +158,29 @@ const GLOBAL = (function() {
     function toggleCompleted(task) {
         task.completed = (task.completed ? false : true);
     }
-    function clearContent() {
-        contentPanel.innerHTML = "";
+    function clearElement(element) {
+        element.replaceChildren();
     }
     function loadNewPage(str) {
         switch (str) {
             case "all":
-                clearContent();
+                clearElement(contentPanel);
                 displayContentPage(contentPanel, data, "All Tasks");
                 break;
             case "today": 
-                clearContent();
+                clearElement(contentPanel);
                 displayContentPage(contentPanel, data, "Today's Tasks", utils.callback.taskDueToday);
                 break;
             case "week":
-                clearContent();
+                clearElement(contentPanel);
                 displayContentPage(contentPanel, data, "This Week", utils.callback.taskDueThisWeek);
                 break;
             case "month":
-                clearContent();
+                clearElement(contentPanel);
                 displayContentPage(contentPanel, data, "This Month", utils.callback.taskDueThisMonth);
                 break;
         }
+        contentPanel.dataset.currentPage = str;
     }
     function getProjectList(path) {
         return projectList;
@@ -156,14 +202,13 @@ const GLOBAL = (function() {
         })
     }
     function updateNavProjectLists() {
+        clearElement(domProjectsList);
+        clearElement(domGroupProjectsList);
         addListOfProjectsToTarget(projectsOfTypeFromList("single", getProjectList("path goes here")), domProjectsList);
         addListOfProjectsToTarget(projectsOfTypeFromList("group", getProjectList("path goes here")), domGroupProjectsList);
     }
     function addProjectToList(project) {
-        projectList = {
-            ...projectList,
-            project
-        }
+        projectList[project.name] = project;
     }
 
     let projectList = {
@@ -196,5 +241,7 @@ const GLOBAL = (function() {
 
     //TO DO: Get project and task displays to have more functionality
     //  not just the name.
-    //Get user input to create new tasks/projects
+
+    //Prevent user from creating a new project or task with the same
+    //  name as an existing one
 })();
