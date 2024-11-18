@@ -73,3 +73,45 @@ li {
 .content {
     background-color: lightblue;
 }
+
+.task {
+    display: flex;
+    justify-content: space-between;
+    max-width: 500px;
+    height: 2em;
+    background-color: white;
+    border: solid 1px;
+    border-color: grey;
+    align-items: center;
+    padding: 0px 13px;
+    margin: 1px;
+    box-shadow: 0px 1px 2px -1px;
+}
+.task:hover {
+    background-color: #e9e9ea;
+}
+.task-controls {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    margin-right: 5px;
+}
+.icon-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.small-icon.delete:hover {
+    fill: crimson;
+}
+.small-icon.edit:hover {
+    fill: #2d55f7;
+}

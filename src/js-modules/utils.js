@@ -1,41 +1,104 @@
 //This is a module for utility functions to be used 
 //  in many other modules
 
-//need a function that checks the project.type AND checks if the 
-// project.date is today. Is there a way of generalizing the 
+//Is there a way of generalizing the 
 // filter callback functions?
 
 import { isToday } from "date-fns";
 import { isThisWeek } from "date-fns";
 import { isThisMonth } from "date-fns";
+import deleteSvg from "../img/delete.svg";
+import editSvg from "../img/edit.svg";
 const log = console.log;
 
 export const utilsInit = function() {
+
+    const svgs = {
+        edit: editSvg,
+        delete: deleteSvg,
+    };
+
     function addElementWithTextToContainer(element, text, container) {
         const newElement = document.createElement(element);
         newElement.textContent = text;
         container.appendChild(newElement);
     }
 
-    function addTaskToDomList(task, taskList) {
+    function addTaskToTaskList(task, taskList) {
         const taskElement = document.createElement("li");
-        taskElement.textContent = task.name;
+        createTaskVisualAndAddToElement(task.name, taskElement);
+        //taskElement.textContent = task.name;
         taskList.appendChild(taskElement);
     }
 
     function addNewTaskListToDom(data, container, ...filterFunctions) {
-        const taskList = document.createElement("li");
+        const taskList = document.createElement("ul");
         let filteredData = data.slice();
         
         for (const func of filterFunctions) {
             filteredData = filteredData.filter(func);
         }
         filteredData.forEach((task) => {
-                addTaskToDomList(task, taskList);
+                addTaskToTaskList(task, taskList);
             });
         container.appendChild(taskList);
     }
 
+    //Task visual builder functions
+
+    async function addFileContentToElement(url, element) {
+        const req = new Request(
+            url,
+            {
+                method: "GET",
+            }
+        );
+        await fetch(req)
+            .then((response) => response.text())
+            .then((text) => {
+                element.innerHTML = text;
+            })
+            .catch((error) => {
+                console.warn("Fetch failed", error.message)
+        });
+    }
+    async function addSmallIconToElement(iconName, element) {
+        await addFileContentToElement(svgs[iconName], element);
+        element.querySelector("svg").classList.add(...["small-icon", `${iconName}`]);
+    }
+    function buildVisualTask(name) {
+        
+        const taskHTML = `
+            <div class="task">
+                <p>${name}</p>
+                <ul class="task-controls">
+                    <li><button class="icon-button edit">
+                    </button></li>
+                    <li><button class="icon-button delete">
+                    </button></li>
+                </ul>
+            </div>
+        `;
+
+        const taskFragment = document.createRange().createContextualFragment(taskHTML);
+    
+        addSmallIconToElement("edit", taskFragment.querySelector("button.edit"));
+        addSmallIconToElement("delete", taskFragment.querySelector("button.delete"));
+
+        //What if in the future we wanted to 
+        // add more svgs? Is there a way/design pattern that makes it
+        // so that adding more such things is easy?
+        // For example, a centralised list of "things", in this case 
+        // "edit" and "delete", so that merely adding to this list 
+        // will update all the necessary things elsewhere. Also, is
+        // there a way to generalise this to make it abstract enough
+        // to use with many other things?
+
+        return taskFragment;
+    }
+    function createTaskVisualAndAddToElement(taskName, element) {
+        element.appendChild(buildVisualTask(taskName));
+    }
 
     //CALLBACKS
 
@@ -61,8 +124,9 @@ export const utilsInit = function() {
 
     return {
         addElementWithTextToContainer,
-        addTaskToDomList,
+        addTaskToTaskList,
         addNewTaskListToDom,
+        createTaskVisualAndAddToElement,
         
         callback: {
             singleProjectFilter,
