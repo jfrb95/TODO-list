@@ -87,7 +87,21 @@ export const utilsInit = function() {
     }
 
     //Project visual builder functions
-    
+    function buildVisualProject(name) {
+        const projectHTML = `
+            <button class="project">
+                <p>${name}</p>
+            </button>
+        `;
+
+        const projectFragment = document.createRange()
+                                    .createContextualFragment(projectHTML);
+        
+        return projectFragment;
+    }
+    function createProjectVisualAndAddToElement(projectName, element) {
+        element.appendChild(buildVisualProject(projectName));
+    }
 
     //CALLBACKS
 
@@ -116,6 +130,7 @@ export const utilsInit = function() {
         addTaskToTaskList,
         addNewTaskListToDom,
         createTaskVisualAndAddToElement,
+        createProjectVisualAndAddToElement,
         
         callback: {
             singleProjectFilter,

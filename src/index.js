@@ -206,7 +206,7 @@ const GLOBAL = (function() {
     function addListOfProjectsToTarget(listOfProjects, target) {
         listOfProjects.forEach((project) => {
             const li = document.createElement("li");
-            li.textContent = project.name;
+            utils.createProjectVisualAndAddToElement(project.name, li);
             target.appendChild(li);
         })
     }
