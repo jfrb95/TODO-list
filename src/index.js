@@ -220,7 +220,6 @@ const GLOBAL = (function() {
         projectList[project.name] = project;
     }
 
-
     let projectList = {
         project1:   {
                         name: "project1",
@@ -252,8 +251,6 @@ const GLOBAL = (function() {
     //TO DO: Get project and task displays to have more functionality
     //  not just the name.
 
-    //Make function that dynamically adds a task object to the html
-    //  use fetch to get the svgs
 
 
     //ISSUES:
