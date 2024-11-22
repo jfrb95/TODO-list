@@ -26,7 +26,7 @@ export const utilsInit = function() {
 
     function addTaskToTaskList(task, taskList) {
         const taskElement = document.createElement("li");
-        createTaskVisualAndAddToElement(task.name, taskElement);
+        createTaskVisualAndAddToElement(task, taskElement);
         taskList.appendChild(taskElement);
     }
 
@@ -45,19 +45,24 @@ export const utilsInit = function() {
     }
 
     //Task visual builder functions
-    function buildVisualTask(name) {
+    function buildVisualTask(task) {
         
         const taskHTML = `
-            <div class="task">
-                <p>${name}</p>
-                <ul class="task-controls">
-                    <li><button class="icon-button edit">
-                        ${editSvg}
-                    </button></li>
-                    <li><button class="icon-button delete">
-                        ${deleteSvg}
-                    </button></li>
-                </ul>
+            <div class="task-wrapper">
+                <div class="task">
+                    <p>${task.name}</p>
+                    <ul class="task-controls">
+                        <li><button class="icon-button edit">
+                            ${editSvg}
+                        </button></li>
+                        <li><button class="icon-button delete">
+                            ${deleteSvg}
+                        </button></li>
+                    </ul>
+                </div>
+                <div class="task-description hidden">
+                    <p>${task.description}</p>
+                </div>
             </div>
         `;
 
@@ -68,9 +73,8 @@ export const utilsInit = function() {
             .classList.add(...["small-icon", "edit"]);
         taskFragment.querySelector("button.delete svg")
             .classList.add(...["small-icon", "delete"]);
-        //addSmallIconToElement("edit", taskFragment.querySelector("button.edit"));
-        //addSmallIconToElement("delete", taskFragment.querySelector("button.delete"));
-
+        
+        
         //What if in the future we wanted to 
         // add more svgs? Is there a way/design pattern that makes it
         // so that adding more such things is easy?
@@ -82,8 +86,20 @@ export const utilsInit = function() {
 
         return taskFragment;
     }
-    function createTaskVisualAndAddToElement(taskName, element) {
-        element.appendChild(buildVisualTask(taskName));
+    function createTaskVisualAndAddToElement(task, element) {
+        element.appendChild(buildVisualTask(task));
+        element.querySelector(".task-wrapper").addEventListener("click", (event) => {
+            if (event.target.tagName !== "svg") {
+                const descriptionClassList = event.currentTarget.querySelector(".task-description").classList;
+
+                if (descriptionClassList.contains("hidden")) {
+                    descriptionClassList.remove("hidden");
+                } else {
+                    descriptionClassList.add("hidden");
+                }
+            }
+        });
+        
     }
 
     //Project visual builder functions

@@ -64,6 +64,12 @@ li {
     --hover-color: #e9e9ea;
 }
 
+/*misc*/
+.hidden {
+    display: none;
+}
+
+/*specific*/
 .container {
     display: grid;
     grid-template-columns: 1fr 4fr;
