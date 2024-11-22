@@ -285,7 +285,6 @@ const GLOBAL = (function() {
     displayContentPage(contentPanel, data, "All Tasks");
 
     //TO DO: 
-    //click a task to see info about it
     //add proper data storage
     //develop priority system
     //add "completion" status toggle
@@ -293,4 +292,12 @@ const GLOBAL = (function() {
 
     //ISSUES:
     
+    //WHAT I WOULD DO NEXT TIME:
+    //have a 'component' class or factory etc. that contains
+    //  state info and a reference to the DOM version of itself
+    //Then a page could be made purely in javascript, and a function
+    //  could load a page purely by reading the list of components
+    //  and generating the html using functions that are stored as
+    //  properties within the component object
+
 })();

@@ -89,7 +89,7 @@ export const utilsInit = function() {
     function createTaskVisualAndAddToElement(task, element) {
         element.appendChild(buildVisualTask(task));
         element.querySelector(".task-wrapper").addEventListener("click", (event) => {
-            if (event.target.tagName !== "svg") {
+            if (!event.target.closest(".task-controls") && event.target.closest(".task")) {
                 const descriptionClassList = event.currentTarget.querySelector(".task-description").classList;
 
                 if (descriptionClassList.contains("hidden")) {
