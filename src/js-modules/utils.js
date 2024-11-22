@@ -89,7 +89,7 @@ export const utilsInit = function() {
     //Project visual builder functions
     function buildVisualProject(name) {
         const projectHTML = `
-            <button class="project">
+            <button class="project" data-project-name="${name}">
                 <p>${name}</p>
             </button>
         `;
@@ -125,6 +125,12 @@ export const utilsInit = function() {
         return isThisMonth(task.deadline);
     }
 
+    function taskInProjectFilter(projectName) {
+        return function(task) {
+            return task.project.name === projectName;
+        }
+    }
+
     return {
         addElementWithTextToContainer,
         addTaskToTaskList,
@@ -138,6 +144,7 @@ export const utilsInit = function() {
             taskDueToday,
             taskDueThisWeek,
             taskDueThisMonth,
+            taskInProjectFilter,
         }
 
     }

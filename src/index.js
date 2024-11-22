@@ -1,5 +1,6 @@
 import "./style.css";
 import { displayContentPage } from "./js-modules/displayContentPage.js";
+import { displayProjectPage } from "./js-modules/displayProjectPage.js";
 
 import { startOfTomorrow } from "date-fns";
 
@@ -22,8 +23,17 @@ const GLOBAL = (function() {
         if (!classes.contains("nav-button")) {
             return;
         }
-        loadNewPage(classes[0]);
+        loadNewContentPage(classes[0]);
     });
+    const navProjectsSection = document.querySelector(".nav-projects-section");
+    
+    //WORKING ON THIS
+    navProjectsSection.addEventListener("click", (event) => {
+        if (!event.target.classList.contains("project")) {
+           return
+        }
+        loadNewProjectPage(event.target.dataset.projectName);
+    })
 
     /*NEW PROJECT DIALOG*/
     const newProjectDialog = document.querySelector("dialog.new-project");
@@ -98,7 +108,18 @@ const GLOBAL = (function() {
                 ), 
                 data
             );
-            loadNewPage(contentPanel.dataset.currentPage);
+            switch (contentPanel.dataset.pageType){
+                case "nav-button":
+                    loadNewContentPage(contentPanel.dataset.currentPage);
+                    break;
+                case "project":
+                    loadNewProjectPage(contentPanel.dataset.currentPage);
+                    break;
+                default:
+                    return new Error("Current Page is not project or nav button");
+            
+                }
+            
             newTaskDialog.close();
         } else {
             alert("That name is already in use");
@@ -170,7 +191,7 @@ const GLOBAL = (function() {
     function clearElement(element) {
         element.replaceChildren();
     }
-    function loadNewPage(str) {
+    function loadNewContentPage(str) {
         switch (str) {
             case "all":
                 clearElement(contentPanel);
@@ -188,8 +209,17 @@ const GLOBAL = (function() {
                 clearElement(contentPanel);
                 displayContentPage(contentPanel, data, "This Month", utils.callback.taskDueThisMonth);
                 break;
+            default:
+                return new Error("loadNewContentPage input was an incorrect type");
         }
         contentPanel.dataset.currentPage = str;
+        contentPanel.dataset.pageType = "nav-button";
+    }
+    function loadNewProjectPage(projectName) {
+        clearElement(contentPanel);
+        displayProjectPage(contentPanel, data, projectName);
+        contentPanel.dataset.currentPage = projectName;
+        contentPanel.dataset.pageType = "project";
     }
     function getProjectList(path) {
         return projectList;
@@ -213,8 +243,14 @@ const GLOBAL = (function() {
     function updateNavProjectLists() {
         clearElement(domProjectsList);
         clearElement(domGroupProjectsList);
-        addListOfProjectsToTarget(projectsOfTypeFromList("single", getProjectList("path goes here")), domProjectsList);
-        addListOfProjectsToTarget(projectsOfTypeFromList("group", getProjectList("path goes here")), domGroupProjectsList);
+        
+        const listOfSingleProjects = projectsOfTypeFromList("single", getProjectList("path goes here"))
+        addListOfProjectsToTarget(listOfSingleProjects, domProjectsList);
+        
+        const listOfGroupProjects = projectsOfTypeFromList("group", getProjectList("path goes here"))
+        addListOfProjectsToTarget(listOfGroupProjects, domGroupProjectsList);
+    
+
     }
     function addProjectToList(project) {
         projectList[project.name] = project;
@@ -248,12 +284,13 @@ const GLOBAL = (function() {
 
     displayContentPage(contentPanel, data, "All Tasks");
 
-    //TO DO: Get project and task displays to have more functionality
-    //  not just the name.
-
+    //TO DO: 
+    //click a task to see info about it
+    //add proper data storage
+    //develop priority system
+    //add "completion" status toggle
 
 
     //ISSUES:
-    //svg icons take a second to load in - looks sloppy
-    //  -possible to wait for icons to load before displaying?
+    
 })();
