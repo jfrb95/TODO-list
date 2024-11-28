@@ -23,7 +23,7 @@ const GLOBAL = (function() {
         if (!classes.contains("nav-button")) {
             return;
         }
-        loadNewContentPage(classes[0]);
+        utils.loadNewContentPage(classes[0], contentPanel, data);
     });
     const navProjectsSection = document.querySelector(".nav-projects-section");
     
@@ -32,7 +32,7 @@ const GLOBAL = (function() {
         if (!event.target.classList.contains("project")) {
            return
         }
-        loadNewProjectPage(event.target.dataset.projectName);
+        utils.loadNewProjectPage(event.target.dataset.projectName, contentPanel, data);
     })
 
     /*NEW PROJECT DIALOG*/
@@ -61,8 +61,6 @@ const GLOBAL = (function() {
             updateNavProjectLists();
             newProjectDialog.close();
         }
-        
-        
     });
     dialogCancelNewProjectButton.addEventListener("click", (event) => {
         event.preventDefault();
@@ -110,15 +108,15 @@ const GLOBAL = (function() {
             );
             switch (contentPanel.dataset.pageType){
                 case "nav-button":
-                    loadNewContentPage(contentPanel.dataset.currentPage);
+                    utils.loadNewContentPage(contentPanel.dataset.currentPage, contentPanel, data);
                     break;
                 case "project":
-                    loadNewProjectPage(contentPanel.dataset.currentPage);
+                    utils.loadNewProjectPage(contentPanel.dataset.currentPage, contentPanel, data);
                     break;
                 default:
                     return new Error("Current Page is not project or nav button");
             
-                }
+            }
             
             newTaskDialog.close();
         } else {
@@ -130,7 +128,32 @@ const GLOBAL = (function() {
         newTaskDialog.close();
     });
 
+    //DELETE TASK EVENT LISTENING
+    /*
+    const domTaskList = document.querySelector(".task-list");
+    domTaskList.addEventListener("click", (event) => {
+        log(event.target);
+        if (event.target.closest("delete")) {
+            deleteTask(event.target.closest("task").dataset.taskIndex);
+            //Need to refrash the page here
+            switch (contentPanel.dataset.pageType){
+                case "nav-button":
+                    loadNewContentPage(contentPanel.dataset.currentPage);
+                    break;
+                case "project":
+                    loadNewProjectPage(contentPanel.dataset.currentPage);
+                    break;
+                default:
+                    return new Error("Current Page is not project or nav button");
+            
+            }
+        }
+    })
+        */
+
     function Task(name, project, dateCreated, deadline, description, tags, priority) {
+
+        let index;
 
         return {
             name,
@@ -139,7 +162,13 @@ const GLOBAL = (function() {
             deadline,
             description,
             tags,
-            priority
+            priority,
+            set index(i) {
+                index = i;
+            },
+            get index() {
+                return index;
+            }
         }
     }
     function Project(name, type, description, completed=false) {
@@ -153,36 +182,10 @@ const GLOBAL = (function() {
 
     function readData(path) {
         return [
-            {
-                name: "task1",
-                project: projectList.project1,
-                dateCreated: "date1",
-                deadline: new Date(2025, 1, 1),
-                description: "user-created description of task1",
-                tags: [
-                    "wedding",
-                    "funny"
-                ],
-                priority: 1,
-                completed: false
-            },
-    
-            {
-                name: "task2",
-                project: projectList.project2,
-                dateCreated: "date3",
-                deadline: new Date(),
-                description: "user-created description of task2",
-                tags: [
-                    "dog",
-                    "american"
-                ],
-                priority: 5,
-                completed: true
-            }
         ];
     }
     function addTaskToData(task, data) {
+        task.index = data.length;
         data.push(task);
     }
     function toggleCompleted(task) {
@@ -191,36 +194,7 @@ const GLOBAL = (function() {
     function clearElement(element) {
         element.replaceChildren();
     }
-    function loadNewContentPage(str) {
-        switch (str) {
-            case "all":
-                clearElement(contentPanel);
-                displayContentPage(contentPanel, data, "All Tasks");
-                break;
-            case "today": 
-                clearElement(contentPanel);
-                displayContentPage(contentPanel, data, "Today's Tasks", utils.callback.taskDueToday);
-                break;
-            case "week":
-                clearElement(contentPanel);
-                displayContentPage(contentPanel, data, "This Week", utils.callback.taskDueThisWeek);
-                break;
-            case "month":
-                clearElement(contentPanel);
-                displayContentPage(contentPanel, data, "This Month", utils.callback.taskDueThisMonth);
-                break;
-            default:
-                return new Error("loadNewContentPage input was an incorrect type");
-        }
-        contentPanel.dataset.currentPage = str;
-        contentPanel.dataset.pageType = "nav-button";
-    }
-    function loadNewProjectPage(projectName) {
-        clearElement(contentPanel);
-        displayProjectPage(contentPanel, data, projectName);
-        contentPanel.dataset.currentPage = projectName;
-        contentPanel.dataset.pageType = "project";
-    }
+
     function getProjectList(path) {
         return projectList;
     }
@@ -256,6 +230,7 @@ const GLOBAL = (function() {
         projectList[project.name] = project;
     }
 
+
     let projectList = {
         project1:   {
                         name: "project1",
@@ -279,18 +254,30 @@ const GLOBAL = (function() {
     const data = readData(dataPath);
     updateNavProjectLists();
 
+    addTaskToData(Task("task1", projectList.project1, "date1", new Date(2025, 1, 1), "user-created description of task1", ["wedding", "funny"], 1), data);
+    addTaskToData(Task("task2", projectList.project2, "date6", new Date(), "description for task 2", ["dog", "american"], 5), data);
     addTaskToData(Task("task3", projectList.project1, "date5", startOfTomorrow(), "description for task3", ["tag6", "tag1"], 3), data);
     addTaskToData(Task("task4", projectList.project1, "date6", new Date(), "description for task 4", ["tag1"], 2), data);
 
     displayContentPage(contentPanel, data, "All Tasks");
 
-    //TO DO: 
+    document.querySelector("body").addEventListener("click", (event) => {
+        log(data);
+    });
+
+    //TO DO:
     //add proper data storage
-    //develop priority system
-    //add "completion" status toggle
+    //make delete and edit functional
 
 
     //ISSUES:
+    //addTaskToData() gives the task the index - currently this wont
+    //  be updated as the data updates. Fix this.
+    //  Current state of deleteTask() may solve this issue.
+    //  The delete task system is untested - need to add eventlistener
+
+    //Completed toggle is barebones
+    //Delete task is hacky
     
     //WHAT I WOULD DO NEXT TIME:
     //have a 'component' class or factory etc. that contains
@@ -299,5 +286,6 @@ const GLOBAL = (function() {
     //  could load a page purely by reading the list of components
     //  and generating the html using functions that are stored as
     //  properties within the component object
+
 
 })();

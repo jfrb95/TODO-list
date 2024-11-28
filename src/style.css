@@ -69,6 +69,14 @@ li {
 .hidden {
     display: none;
 }
+input[type="checkbox"] {
+    width: 13px;
+}
+li.checkbox {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}
 
 /*specific*/
 .container {
@@ -106,11 +114,12 @@ li {
 .task-controls {
     display: grid;
     gap: 8px;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     align-items: center;
+    justify-content: center;
     margin-right: 0px;
 }
-.task-description {
+.task-description-wrapper {
     background-color: white;
     margin-left: 5px;
     margin-right: 5px;
@@ -119,6 +128,10 @@ li {
     border-top: none;
     border-color: grey;
     padding: 3px 20px;
+}
+.task-description {
+    display: grid;
+    grid-template-columns: 1fr 67px;
 }
 .icon-button {
     background: none;
