@@ -33,20 +33,24 @@ export const utilsInit = function() {
     }
 
     function addNewTaskListToDom(data, container, ...filterFunctions) {
-        //this is not yet  working
+        //this deletes first task in data
         const taskList = document.createElement("ul");
         taskList.classList.add("task-list");
         taskList.addEventListener("click", (event) => {
             const deleteButton = event.target.closest("button");
             if (deleteButton && deleteButton.classList.contains("delete")) {
+                //task not being deleted here
+                log(event.target.closest(".task-wrapper"));
+                log(event.target.closest(".task-wrapper").dataset.taskIndex);
                 deleteTask(event.target.closest(".task-wrapper").dataset.taskIndex, data);
-                log(container.dataset);
-                //loadNewContentPage is not in utils.js
+                
                 switch (container.dataset.pageType){
                     case "nav-button":
+                        log("new content page")
                         loadNewContentPage(container.dataset.currentPage, container, data);
                         break;
                     case "project":
+                        log("new project page");
                         loadNewProjectPage(container.dataset.currentPage, container, data);
                         break;
                     default:
@@ -54,14 +58,11 @@ export const utilsInit = function() {
                 
                 }
             }
-            log(data);
         })
 
-        function deleteTask(task, data) {
-            data = data.slice(task.index, 1)
-            log(data);
+        function deleteTask(taskIndex, data) {
+            data.splice(taskIndex, 1)
             refreshTaskIndexes(data);
-            
         }
         function refreshTaskIndexes(data) {
             for (let i = 0; i < data.length; ++i) {

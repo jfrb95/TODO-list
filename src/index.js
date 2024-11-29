@@ -261,10 +261,6 @@ const GLOBAL = (function() {
 
     displayContentPage(contentPanel, data, "All Tasks");
 
-    document.querySelector("body").addEventListener("click", (event) => {
-        log(data);
-    });
-
     //TO DO:
     //add proper data storage
     //make delete and edit functional
