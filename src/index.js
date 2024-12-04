@@ -128,47 +128,70 @@ const GLOBAL = (function() {
         newTaskDialog.close();
     });
 
-    //DELETE TASK EVENT LISTENING
-    /*
-    const domTaskList = document.querySelector(".task-list");
-    domTaskList.addEventListener("click", (event) => {
-        log(event.target);
-        if (event.target.closest("delete")) {
-            deleteTask(event.target.closest("task").dataset.taskIndex);
-            //Need to refrash the page here
-            switch (contentPanel.dataset.pageType){
-                case "nav-button":
-                    loadNewContentPage(contentPanel.dataset.currentPage);
-                    break;
-                case "project":
-                    loadNewProjectPage(contentPanel.dataset.currentPage);
-                    break;
-                default:
-                    return new Error("Current Page is not project or nav button");
-            
-            }
-        }
-    })
-        */
 
     function Task(name, project, dateCreated, deadline, description, tags, priority) {
 
         let index;
 
+        function deleteSelf() {
+            data.splice(index, 1)
+            refreshTaskIndexes(data);
+            updateLocalStorage();
+        };
+
+        function editSelf(newName, newDescription, newDeadline, newPriority) {
+            name = newName;
+            description = newDescription;
+            deadline = newDeadline;
+            priority = newPriority;
+            updateLocalStorage();
+        }
+
         return {
-            name,
-            project,
-            dateCreated,
-            deadline,
-            description,
-            tags,
-            priority,
+            set name(n) {
+                name = n;
+            },
+            get name() {
+                return name;
+            },
+
+            get project() {
+                return project;
+            },
+
+            get dateCreated() {
+                return dateCreated;
+            },
+            
+            set deadline(d) {
+                deadline = d;
+            },
+            get deadline() {
+                return deadline;
+            },
+
+            set description(d) {
+                description = d;
+            },
+            get description() {
+                return description;
+            },
+            
+            set priority(p) {
+                priority = p;
+            },
+            get priority() {
+                return priority;
+            },
+
             set index(i) {
                 index = i;
             },
             get index() {
                 return index;
-            }
+            },
+            deleteSelf,
+            editSelf,
         }
     }
     function Project(name, type, description, completed=false) {
@@ -181,6 +204,7 @@ const GLOBAL = (function() {
     }
 
     function readData(path) {
+        //take data from localStorage and display it as an array of tasks
         return [
         ];
     }
@@ -188,13 +212,14 @@ const GLOBAL = (function() {
         task.index = data.length;
         data.push(task);
     }
-    function toggleCompleted(task) {
-        task.completed = (task.completed ? false : true);
-    }
+
     function clearElement(element) {
         element.replaceChildren();
     }
 
+    function updateLocalStorage() {
+        
+    }
     function getProjectList(path) {
         return projectList;
     }
@@ -229,6 +254,11 @@ const GLOBAL = (function() {
     function addProjectToList(project) {
         projectList[project.name] = project;
     }
+    function refreshTaskIndexes(data) {
+        for (let i = 0; i < data.length; ++i) {
+            data[i].index = i;
+        }
+    }
 
 
     let projectList = {
@@ -260,17 +290,52 @@ const GLOBAL = (function() {
     addTaskToData(Task("task4", projectList.project1, "date6", new Date(), "description for task 4", ["tag1"], 2), data);
 
     displayContentPage(contentPanel, data, "All Tasks");
+    utils.addConfirmChangesListener(contentPanel, data)
+
+    function storageAvailable(type) {
+        let storage;
+        try {
+          storage = window[type];
+          const x = "__storage_test__";
+          storage.setItem(x, x);
+          storage.removeItem(x);
+          return true;
+        } catch (e) {
+          return (
+            e instanceof DOMException &&
+            e.name === "QuotaExceededError" &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            storage &&
+            storage.length !== 0
+          );
+        }
+    }
+
+    function useJsStorage() {
+        readData = function(path) {return []};
+        addTaskToData = function(task, data) {
+            task.index = data.length;
+            data.push(task);
+        };
+        addProjectToList = function(project) {
+            projectList[project.name] = project;
+        };
+        getProjectList = function(path) {projectList};
+        updateLocalStorage = function() {};
+    }
+    if (storageAvailable("localStorage")) {
+        log("Local storage available");
+    } else {
+        alert("No local storage available. Using JS storage. Data will be deleted on page refresh.");
+
+    }
 
     //TO DO:
     //add proper data storage
-    //make delete and edit functional
 
+    //DOING
 
     //ISSUES:
-    //addTaskToData() gives the task the index - currently this wont
-    //  be updated as the data updates. Fix this.
-    //  Current state of deleteTask() may solve this issue.
-    //  The delete task system is untested - need to add eventlistener
 
     //Completed toggle is barebones
     //Delete task is hacky
@@ -282,6 +347,5 @@ const GLOBAL = (function() {
     //  could load a page purely by reading the list of components
     //  and generating the html using functions that are stored as
     //  properties within the component object
-
-
+    //This will hopefully help avoid the mess too
 })();

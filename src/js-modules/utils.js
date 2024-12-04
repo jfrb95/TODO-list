@@ -15,6 +15,57 @@ const log = console.log;
 
 export const utilsInit = function() {
 
+    const editTaskDialog = document.querySelector("dialog.edit-task");
+    const dialogCancelEditTaskButton = document.querySelector(".edit-task .dialog-cancel");
+    const editTaskForm = document.querySelector(".edit-task form");
+    const dialogConfirmChangesButton = document.querySelector(".dialog-confirm-changes");
+
+    function addConfirmChangesListener(container, data) {
+        dialogConfirmChangesButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        log("nice");
+        const taskIndex = editTaskDialog.currentTask;
+        let uniqueName = true;
+        const fd = new FormData(editTaskForm);
+        for (const task of data) {
+            if (task.name === fd.get("task-name")) {
+                uniqueName = false;
+            }
+        }
+        if (data[taskIndex].name === fd.get("task-name")) {
+            uniqueName = true;
+        }
+        if (uniqueName) {
+            data[taskIndex].editSelf(
+                fd.get("task-name"),
+                fd.get("description"),
+                new Date(fd.get("deadline")),
+                fd.get("priority")
+            );
+            /*
+            data[taskIndex].name = fd.get("task-name");
+            data[taskIndex].description = fd.get("description");
+            data[taskIndex].deadline = new Date(fd.get("deadline"));
+            data[taskIndex].priority = fd.get("priority");
+            */
+
+            switch (container.dataset.pageType){
+                case "nav-button":
+                    loadNewContentPage(container.dataset.currentPage, container, data);
+                    break;
+                case "project":
+                    loadNewProjectPage(container.dataset.currentPage, container, data);
+                    break;
+                default:
+                    return new Error("Current Page is not project or nav button");
+            }
+            editTaskDialog.close();
+        } else {
+            alert("That name is already in use");
+        };
+        });
+    }
+
     const svgs = {
         edit: editSvg,
         delete: deleteSvg,
@@ -33,24 +84,19 @@ export const utilsInit = function() {
     }
 
     function addNewTaskListToDom(data, container, ...filterFunctions) {
-        //this deletes first task in data
         const taskList = document.createElement("ul");
         taskList.classList.add("task-list");
+        //DELETE FUNCTION
         taskList.addEventListener("click", (event) => {
-            const deleteButton = event.target.closest("button");
-            if (deleteButton && deleteButton.classList.contains("delete")) {
-                //task not being deleted here
-                log(event.target.closest(".task-wrapper"));
-                log(event.target.closest(".task-wrapper").dataset.taskIndex);
-                deleteTask(event.target.closest(".task-wrapper").dataset.taskIndex, data);
-                
+            const deleteButton = event.target.closest("button.delete");
+            if (deleteButton) {
+                const task = data[event.target.closest(".task-wrapper").dataset.taskIndex];
+                task.deleteSelf();
                 switch (container.dataset.pageType){
                     case "nav-button":
-                        log("new content page")
                         loadNewContentPage(container.dataset.currentPage, container, data);
                         break;
                     case "project":
-                        log("new project page");
                         loadNewProjectPage(container.dataset.currentPage, container, data);
                         break;
                     default:
@@ -60,16 +106,25 @@ export const utilsInit = function() {
             }
         })
 
-        function deleteTask(taskIndex, data) {
-            data.splice(taskIndex, 1)
-            refreshTaskIndexes(data);
-        }
-        function refreshTaskIndexes(data) {
-            for (let i = 0; i < data.length; ++i) {
-                data[i].index = i;
+        /*EDIT TASK DIALOG*/
+        taskList.addEventListener("click", (event) => {
+            log("ok");
+            const editButton = event.target.closest("button.edit");
+            if (editButton) {
+                const taskIndex = event.target.closest(".task-wrapper").dataset.taskIndex;
+                editTaskDialog.currentTask = taskIndex;
+                editTaskDialog.showModal();
             }
-        }
+        });
+        
 
+        dialogCancelEditTaskButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            editTaskDialog.close();
+        });
+
+        
+        
 
         let filteredData = data.slice();
         
@@ -240,6 +295,7 @@ export const utilsInit = function() {
         createProjectVisualAndAddToElement,
         loadNewContentPage,
         loadNewProjectPage,
+        addConfirmChangesListener,
         
         callback: {
             singleProjectFilter,
@@ -251,4 +307,5 @@ export const utilsInit = function() {
         }
 
     }
+
 }

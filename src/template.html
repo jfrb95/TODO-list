@@ -61,6 +61,25 @@
                 <button class="dialog-cancel">Cancel</button>
             </form>
         </dialog>
+        <dialog class="edit-task" data-current-task>
+            <form method="dialog">
+                <h4 class="dialog-header">Edit Task</h4>
+                <label for="task-name">Name</label>
+                <input type="text" id="task-name" name="task-name">
+                
+                <label for="description">Description</label>
+                <input type="text" id="description" name="description">
+                
+                <label for="deadline">Deadline</label>
+                <input type="date" id="deadline" name="deadline">
+
+                <label for="priority">Priority - change how this works</label>
+                <input type="number" id="priority" name="priority">
+
+                <button class="dialog-confirm-changes">Confirm Changes</button>
+                <button class="dialog-cancel">Cancel</button>
+            </form>
+        </dialog>
         <dialog class="new-project">
             <form method="dialog">
                 <h4 class="dialog-header">New Project</h4>
