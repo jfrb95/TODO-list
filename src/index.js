@@ -5,12 +5,14 @@ import { displayProjectPage } from "./js-modules/displayProjectPage.js";
 import { startOfTomorrow } from "date-fns";
 
 import { utilsInit } from "./js-modules/utils.js";
+import { storageConfigInit } from "./js-modules/storageConfig.js";
 
 const log = console.log;
 
 const GLOBAL = (function() {
     const utils = utilsInit();
     const dataPath = "./data.json";
+    const storageConfig = storageConfigInit();
 
     const container = document.querySelector(".container");
     const navigationBar = document.querySelector(".navigation");
@@ -26,8 +28,7 @@ const GLOBAL = (function() {
         utils.loadNewContentPage(classes[0], contentPanel, data);
     });
     const navProjectsSection = document.querySelector(".nav-projects-section");
-    
-    //WORKING ON THIS
+
     navProjectsSection.addEventListener("click", (event) => {
         if (!event.target.classList.contains("project")) {
            return
@@ -128,7 +129,6 @@ const GLOBAL = (function() {
         newTaskDialog.close();
     });
 
-
     function Task(name, project, dateCreated, deadline, description, tags, priority) {
 
         let index;
@@ -136,7 +136,7 @@ const GLOBAL = (function() {
         function deleteSelf() {
             data.splice(index, 1)
             refreshTaskIndexes(data);
-            updateLocalStorage();
+            updateLocalStorage(data);
         };
 
         function editSelf(newName, newDescription, newDeadline, newPriority) {
@@ -144,8 +144,8 @@ const GLOBAL = (function() {
             description = newDescription;
             deadline = newDeadline;
             priority = newPriority;
-            updateLocalStorage();
-        }
+            updateLocalStorage(data);
+        };
 
         return {
             set name(n) {
@@ -204,21 +204,41 @@ const GLOBAL = (function() {
     }
 
     function readData(path) {
-        //take data from localStorage and display it as an array of tasks
-        return [
-        ];
+        let data = localStorage.getItem("storedData");
+
+        data = JSON.parse(data);
+
+        data.map((task) => {
+            task.project = projectList[task.project.name];
+            task.deleteSelf = function() {
+                data.splice(this.index, 1);
+                refreshTaskIndexes(data);
+                updateLocalStorage(data);
+            };
+            task.editSelf = function(newName, newDescription, newDeadline, newPriority) {
+                this.name = newName;
+                this.description = newDescription;
+                this.deadline = newDeadline;
+                this.priority = newPriority;
+                updateLocalStorage(data);
+            }
+        })
+
+        return data;
     }
     function addTaskToData(task, data) {
         task.index = data.length;
         data.push(task);
+        updateLocalStorage(data);
     }
 
     function clearElement(element) {
         element.replaceChildren();
     }
 
-    function updateLocalStorage() {
-        
+    function updateLocalStorage(data) {
+        const stringifiedData = JSON.stringify(data);
+        localStorage.setItem("storedData", stringifiedData);
     }
     function getProjectList(path) {
         return projectList;
@@ -258,8 +278,8 @@ const GLOBAL = (function() {
         for (let i = 0; i < data.length; ++i) {
             data[i].index = i;
         }
+        updateLocalStorage(data);
     }
-
 
     let projectList = {
         project1:   {
@@ -281,36 +301,6 @@ const GLOBAL = (function() {
                     },
     };
 
-    const data = readData(dataPath);
-    updateNavProjectLists();
-
-    addTaskToData(Task("task1", projectList.project1, "date1", new Date(2025, 1, 1), "user-created description of task1", ["wedding", "funny"], 1), data);
-    addTaskToData(Task("task2", projectList.project2, "date6", new Date(), "description for task 2", ["dog", "american"], 5), data);
-    addTaskToData(Task("task3", projectList.project1, "date5", startOfTomorrow(), "description for task3", ["tag6", "tag1"], 3), data);
-    addTaskToData(Task("task4", projectList.project1, "date6", new Date(), "description for task 4", ["tag1"], 2), data);
-
-    displayContentPage(contentPanel, data, "All Tasks");
-    utils.addConfirmChangesListener(contentPanel, data)
-
-    function storageAvailable(type) {
-        let storage;
-        try {
-          storage = window[type];
-          const x = "__storage_test__";
-          storage.setItem(x, x);
-          storage.removeItem(x);
-          return true;
-        } catch (e) {
-          return (
-            e instanceof DOMException &&
-            e.name === "QuotaExceededError" &&
-            // acknowledge QuotaExceededError only if there's something already stored
-            storage &&
-            storage.length !== 0
-          );
-        }
-    }
-
     function useJsStorage() {
         readData = function(path) {return []};
         addTaskToData = function(task, data) {
@@ -320,18 +310,43 @@ const GLOBAL = (function() {
         addProjectToList = function(project) {
             projectList[project.name] = project;
         };
-        getProjectList = function(path) {projectList};
-        updateLocalStorage = function() {};
+        getProjectList = function(path) {return projectList};
+        updateLocalStorage = function(data) {};
+        refreshTaskIndexes = function(data) {
+            for (let i = 0; i < data.length; ++i) {
+                data[i].index = i;
+            }
+        }
     }
-    if (storageAvailable("localStorage")) {
+    if (storageConfig.storageAvailable("localStorage")) {
         log("Local storage available");
     } else {
         alert("No local storage available. Using JS storage. Data will be deleted on page refresh.");
+        useJsStorage();
+    }
+
+    let data;
+    if (localStorage.getItem("storedData")) {
+        data = readData(dataPath);
+    } else {
+        data = [];
+        addTaskToData(Task("task1", projectList.project1, "date1", new Date(2025, 1, 1), "user-created description of task1", ["wedding", "funny"], 1), data);
+        addTaskToData(Task("task2", projectList.project2, "date6", new Date(), "description for task 2", ["dog", "american"], 5), data);
+        addTaskToData(Task("task3", projectList.project1, "date5", startOfTomorrow(), "description for task3", ["tag6", "tag1"], 3), data);
+        addTaskToData(Task("task4", projectList.project1, "date6", new Date(), "description for task 4", ["tag1"], 2), data);
 
     }
+    
+    updateNavProjectLists();
+
+    displayContentPage(contentPanel, data, "All Tasks");
+    utils.addConfirmChangesListener(contentPanel, data);
 
     //TO DO:
     //add proper data storage
+    //  make updateLocalStorage work
+    //  the functions listed in useJsStorage need to have their global 
+    //      versions updated to work with localStorage
 
     //DOING
 

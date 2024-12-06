@@ -11,10 +11,12 @@ import deleteSvg from "../img/delete.svg";
 import editSvg from "../img/edit.svg";
 import { displayContentPage } from "./displayContentPage.js";
 import { displayProjectPage } from "./displayProjectPage.js";
+import { storageConfigInit } from "./storageConfig.js";
 const log = console.log;
 
 export const utilsInit = function() {
 
+    const storageConfig = storageConfigInit();
     const editTaskDialog = document.querySelector("dialog.edit-task");
     const dialogCancelEditTaskButton = document.querySelector(".edit-task .dialog-cancel");
     const editTaskForm = document.querySelector(".edit-task form");
@@ -59,6 +61,7 @@ export const utilsInit = function() {
                 default:
                     return new Error("Current Page is not project or nav button");
             }
+            updateLocalStorage(data);
             editTaskDialog.close();
         } else {
             alert("That name is already in use");
@@ -77,6 +80,11 @@ export const utilsInit = function() {
         container.appendChild(newElement);
     }
 
+    function updateLocalStorage(data) {
+        const stringifiedData = JSON.stringify(data);
+        localStorage.setItem("storedData", stringifiedData);
+    }
+
     function addTaskToTaskList(task, taskList) {
         const taskElement = document.createElement("li");
         createTaskVisualAndAddToElement(task, taskElement);
@@ -92,6 +100,7 @@ export const utilsInit = function() {
             if (deleteButton) {
                 const task = data[event.target.closest(".task-wrapper").dataset.taskIndex];
                 task.deleteSelf();
+                updateLocalStorage(data);
                 switch (container.dataset.pageType){
                     case "nav-button":
                         loadNewContentPage(container.dataset.currentPage, container, data);
@@ -108,7 +117,6 @@ export const utilsInit = function() {
 
         /*EDIT TASK DIALOG*/
         taskList.addEventListener("click", (event) => {
-            log("ok");
             const editButton = event.target.closest("button.edit");
             if (editButton) {
                 const taskIndex = event.target.closest(".task-wrapper").dataset.taskIndex;
@@ -122,9 +130,6 @@ export const utilsInit = function() {
             event.preventDefault();
             editTaskDialog.close();
         });
-
-        
-        
 
         let filteredData = data.slice();
         
@@ -171,6 +176,11 @@ export const utilsInit = function() {
 
     function clearElement(element) {
         element.replaceChildren();
+    }
+
+    if (storageConfig.storageAvailable("localStorage")) {
+    } else {
+        updateLocalStorage = function() {return};
     }
 
 
